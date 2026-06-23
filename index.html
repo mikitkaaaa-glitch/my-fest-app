@@ -3,64 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Фестивальный Гид</title>
-    <!-- Подключаем официальный скрипт Telegram WebApp -->
+    <title>Vulitsa Ezha Гид</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0d0e15;
-            --card-bg: #181a26;
-            --accent-color: #bc00dd;
+            --bg-color: #0b0f19;
+            --card-bg: #131a2c;
+            --accent-green: #00df89;
+            --accent-purple: #9d4edd;
             --text-color: #ffffff;
-            --text-muted: #8e92a7;
+            --text-muted: #707991;
+            --border-color: #1e293b;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
             padding: 0;
-            padding-bottom: 80px; /* Отступ снизу для меню */
+            padding-bottom: 90px;
             -webkit-user-select: none;
             user-select: none;
         }
 
         header {
-            background: linear-gradient(135deg, #1f1235 0%, #0d0e15 100%);
-            padding: 20px;
+            background: linear-gradient(180deg, #161224 0%, #0b0f19 100%);
+            padding: 20px 15px;
             text-align: center;
-            border-bottom: 1px solid #251c3d;
+            border-bottom: 1px solid var(--border-color);
         }
 
         header h1 {
             margin: 0;
-            font-size: 24px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            background: linear-gradient(45deg, #ff007f, #7928ca);
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            background: linear-gradient(45deg, var(--accent-green), #00b0ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         header p {
-            margin: 5px 0 0 0;
-            color: var(--text-muted);
-            font-size: 14px;
+            margin: 6px 0 0 0;
+            color: var(--accent-purple);
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        /* Навигация по экранам (Нижнее меню) */
+        /* Селектор Дней */
+        .day-selector {
+            display: flex;
+            background-color: var(--card-bg);
+            margin: 15px;
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .day-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .day-btn.active {
+            background-color: var(--bg-color);
+            color: var(--accent-green);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Селектор Сцен */
+        .scene-selector {
+            display: flex;
+            gap: 10px;
+            padding: 0 15px;
+            margin-bottom: 15px;
+        }
+
+        .scene-btn {
+            flex: 1;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .scene-btn.active {
+            border-color: var(--accent-green);
+            background: linear-gradient(135deg, #132a24 0%, #131a2c 100%);
+            color: var(--accent-green);
+        }
+
+        /* Карточки расписания */
+        .schedule-container {
+            padding: 0 15px;
+        }
+
+        .event-card {
+            background-color: var(--card-bg);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .event-time {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--accent-green);
+            background-color: rgba(0, 223, 137, 0.08);
+            padding: 6px 10px;
+            border-radius: 8px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .event-info h3 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .event-info p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        /* Экран Карты */
+        .map-wrapper {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .map-img {
+            width: 100%;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Экран Воркшопов */
+        .workshop-card {
+            background-color: var(--card-bg);
+            border-radius: 14px;
+            padding: 16px;
+            margin: 0 15px 12px 15px;
+            border-left: 4px solid var(--accent-purple);
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .workshop-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .action-btn {
+            background: linear-gradient(90deg, var(--accent-green), #00b0ff);
+            color: #0b0f19;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        /* Навигация */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: var(--card-bg);
+            background-color: #0e1422;
             display: flex;
             justify-content: space-around;
             padding: 12px 0;
-            border-top: 1px solid #2d3142;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+            border-top: 1px solid var(--border-color);
             z-index: 1000;
         }
 
@@ -68,155 +213,67 @@
             background: none;
             border: none;
             color: var(--text-muted);
-            font-size: 12px;
-            font-weight: 500;
+            font-size: 11px;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
         }
 
         .nav-btn.active {
-            color: var(--accent-color);
+            color: var(--accent-green);
         }
 
         .nav-btn svg {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             fill: currentColor;
         }
 
-        /* Контентные экраны */
-        .screen {
-            display: none;
-            padding: 15px;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        /* Стили для Расписания */
-        .scene-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .scene-btn {
-            flex: 1;
-            background-color: var(--card-bg);
-            border: 1px solid #2d3142;
-            color: var(--text-color);
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .scene-btn.active {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-
-        .event-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border-left: 4px solid var(--accent-color);
-        }
-
-        .event-time {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--accent-color);
-            min-width: 55px;
-        }
-
-        .event-info h3 {
-            margin: 0 0 5px 0;
-            font-size: 16px;
-        }
-
-        .event-info p {
-            margin: 0;
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        /* Стили для Карты */
-        .map-container {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 40px 20px;
-            text-align: center;
-            border: 2px dashed #2d3142;
-            margin-top: 20px;
-        }
-
-        /* Стили для Мастер-классов */
-        .action-btn {
-            background: linear-gradient(45deg, #bc00dd, #ff007f);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            width: 100%;
-        }
+        .screen { display: none; }
+        .screen.active { display: block; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1 id="fest-title">FESTIVAL 2026</h1>
-        <p>Ваш интерактивный мобильный гид</p>
+        <h1 id="fest-title">VULITSA EZHA</h1>
+        <p>Официальный гид фестиваля</p>
     </header>
+
+    <!-- СЕЛЕКТОР ДНЕЙ (Общий для расписания) -->
+    <div id="global-day-zone" class="day-selector">
+        <button class="day-btn active" onclick="setDay('sat')">Суббота, 20 июня</button>
+        <button class="day-btn" onclick="setDay('sun')">Воскресенье, 21 июня</button>
+    </div>
 
     <!-- ЭКРАН 1: РАСПИСАНИЕ -->
     <div id="screen-schedule" class="screen active">
         <div class="scene-selector">
-            <button class="scene-btn active" onclick="switchScene('main')">Главная сцена</button>
-            <button class="scene-btn" onclick="switchScene('electronic')">Электро Сцена</button>
+            <button class="scene-btn active" onclick="setScene('main')">Главная Сцена (Pepsi)</button>
+            <button class="scene-btn" onclick="setScene('modul')">Сцена MODUL</button>
         </div>
         
-        <div id="schedule-list">
-            <!-- Сюда будут подставляться карточки -->
+        <div id="schedule-list" class="schedule-container">
+            <!-- Карточки генерируются скриптом -->
         </div>
     </div>
 
     <!-- ЭКРАН 2: КАРТА -->
     <div id="screen-map" class="screen">
-        <h2>Карта фестиваля</h2>
-        <div class="map-container">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#bc00dd" stroke-width="2">
-                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
-                <line x1="9" y1="3" x2="9" y2="18"></line>
-                <line x1="15" y1="6" x2="15" y2="21"></line>
-            </svg>
-            <p style="margin-top: 15px;">Здесь будет интерактивная схема площадки.</p>
-            <p style="font-size: 12px; color: var(--text-muted);">Фуд-корты, сцены, инфоцентр и уборные.</p>
+        <div class="map-wrapper">
+            <!-- Код ищет файл map.png в твоем репозитории -->
+            <img src="map.png" alt="Карта фестиваля" class="map-img" onerror="this.src='https://placehold.co/600x800/131a2c/00df89?text=Загрузите+map.png+в+GitHub'">
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">Совет: карту можно сохранить как изображение на телефон</p>
         </div>
     </div>
 
-    <!-- ЭКРАН 3: АКТИВНОСТИ -->
+    <!-- ЭКРАН 3: МАСТЕР-КЛАССЫ -->
     <div id="screen-activities" class="screen">
-        <h2>Мастер-классы</h2>
-        <div class="event-card" style="flex-direction: column; align-items: flex-start; border-left-color: #00f0ff;">
-            <div style="display: flex; justify-content: space-between; width: 100%;">
-                <span style="color: #00f0ff; font-weight: bold;">14:00 - 15:30</span>
-                <span style="color: var(--text-muted);">Осталось мест: 8</span>
-            </div>
-            <h3>DJ-инг для новичков</h3>
-            <p>Практический воркшоп: учимся сводить треки на оборудовании Pioneer.</p>
-            <button class="action-btn" style="background: #00f0ff; color: #0d0e15;" onclick="signUp(this, 'DJ-инг')">Записаться</button>
+        <div id="workshops-list">
+            <!-- Мастер-классы -->
         </div>
     </div>
 
@@ -228,60 +285,112 @@
         </button>
         <button class="nav-btn" onclick="switchScreen('map', this)">
             <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5c.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
-            Карта
+            Карта локации
         </button>
         <button class="nav-btn" onclick="switchScreen('activities', this)">
-            <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5.49 12踩L3 10.64l9-4.9 9 4.9-2.49 1.36L12 9.3 5.49 12z"/></svg>
-            Воркшопы
+            <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5.49 12L3 10.64l9-4.9 9 4.9-2.49 1.36L12 9.3 5.49 12z"/></svg>
+            Мастер-классы
         </button>
     </nav>
 
     <script>
-        // Инициализируем Telegram WebApp, если открыто в ТГ
         const tg = window.Telegram?.WebApp;
         if (tg) {
-            tg.expand(); // Разворачиваем на весь экран телефона
-            // Приветствуем пользователя по имени из Telegram
+            tg.expand();
             if (tg.initDataUnsafe?.user) {
-                document.getElementById('fest-title').innerText = `Привет, ${tg.initDataUnsafe.user.first_name}!`;
+                document.getElementById('fest-title').innerText = `${tg.initDataUnsafe.user.first_name.toUpperCase()}`;
             }
         }
 
-        // Данные для расписания (имитация базы данных)
-        const events = {
-            main: [
-                { time: "16:00", artist: "Открытие ворот", desc: "Старт фестиваля, сбор гостей" },
-                { time: "18:00", artist: "Инди-группа 'Закат'", desc: "Летний софт-рок" },
-                { time: "21:00", artist: "Хедлайнер Вечера", desc: "Масштабное световое шоу" }
-            ],
-            electronic: [
-                { time: "17:00", artist: "DJ Mikitka", desc: "Minimal / House сет" },
-                { time: "19:30", artist: "SZN", desc: "Deep & Tech House" },
-                { time: "22:00", artist: "NZH", desc: "Drum & Bass ночной разнос" }
-            ]
+        // Текущее состояние фильтров
+        let currentDay = 'sat';
+        let currentScene = 'main';
+
+        // Полная база данных расписания из твоего файла
+        const festivalData = {
+            sat: {
+                main: [
+                    { time: "16:30 - 19:00", artist: "Туц Туц Квиз", desc: "Музыкальная битва для всей компании" },
+                    { time: "19:20 - 20:00", artist: "Давай на ты", desc: "Живое выступление" },
+                    { time: "20:30 - 21:30", artist: "Pompeya", desc: "Главный инди-концерт вечера" }
+                ],
+                modul: [
+                    { time: "12:00 - 13:00", artist: "Intro", desc: "Разгон дневной атмосферы" },
+                    { time: "13:00 - 14:00", artist: "Mikitka", desc: "Minimal / House сет" },
+                    { time: "14:00 - 15:00", artist: "Urbana", desc: "Electronic сет" },
+                    { time: "15:00 - 16:00", artist: "Dj Sashoo", desc: "Groovy House" },
+                    { time: "16:00 - 17:00", artist: "Seventylock", desc: "Спешал битс" },
+                    { time: "17:00 - 18:00", artist: "SZN", desc: "Tech House / Deep" },
+                    { time: "18:00 - 19:30", artist: "Keyser", desc: "Underground селекция" },
+                    { time: "19:30 - 20:30", artist: "Gleb Gurami", desc: "Progressive" },
+                    { time: "20:30 - 21:30", artist: "B2B Ночной Финал", desc: "Совместный разнос от резидентов сцены" }
+                ]
+            },
+            sun: {
+                main: [
+                    { time: "14:00 - 15:00", artist: "FYSM Йога", desc: "Дневной велнес и разминка на траве" },
+                    { time: "16:30 - 19:00", artist: "Туц Туц Квиз", desc: "Второй раунд легендарной игры" },
+                    { time: "19:20 - 20:00", artist: "Keendy", desc: "Лайв шоу" },
+                    { time: "20:30 - 21:30", artist: "Parade of Planets", desc: "Громкое закрытие фестиваля" }
+                ],
+                modul: [
+                    { time: "12:00 - 13:00", artist: "Intro", desc: "Открытие второго дня" },
+                    { time: "13:00 - 14:00", artist: "Seventylock", desc: "Дневной чилл" },
+                    { time: "14:00 - 15:00", artist: "SZN", desc: "Летний хаус сет" },
+                    { time: "15:00 - 16:00", artist: "Mikitka", desc: "House / Minimal вибрации" },
+                    { time: "16:00 - 17:00", artist: "Urbana", desc: "Свежий электронный вайб" },
+                    { time: "17:00 - 18:00", artist: "Dj Sashoo", desc: "Дневной грув" },
+                    { time: "18:00 - 19:30", artist: "Nina Indi", desc: "Уникальный мелодик сет" },
+                    { time: "19:30 - 20:30", artist: "Am I Shep", desc: "Пре-финал" },
+                    { time: "20:30 - 21:30", artist: "B2B Финал", desc: "Закрывающий бэк-ту-бэк" }
+                ]
+            }
         };
 
-        // Логика переключения экранов
+        const workshopsData = [
+            { time: "13:00 - 19:00", title: "Лепка на гончарном круге", label: "Взрослые и дети 4+", seats: 5 },
+            { time: "13:00 - 19:00", title: "Нарисуй-ка красиво!", label: "Взрослые и дети 14+", seats: 12 },
+            { time: "13:00 - 14:00", title: "Мастер-класс по цианотипии", label: "Взрослые и дети 14+", seats: 0 },
+            { time: "14:30 - 15:30", title: "Создание композиции на кензане", label: "Взрослые 18+", seats: 3 },
+            { time: "16:00 - 17:00", title: "Создание обвесов", label: "Взрослые и дети 9+", seats: 7 },
+            { time: "17:30 - 18:30", title: "Роспись большого подсвечника", label: "Взрослые и дети 10+", seats: 2 }
+        ];
+
         function switchScreen(screenId, btn) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
             document.getElementById(`screen-${screenId}`).classList.add('active');
             btn.classList.add('active');
+
+            // Скрывать выбор дней на экране карты
+            const dayZone = document.getElementById('global-day-zone');
+            if (screenId === 'map') {
+                dayZone.style.display = 'none';
+            } else {
+                dayZone.style.display = 'flex';
+            }
         }
 
-        // Логика переключения сцен
-        function switchScene(sceneId) {
+        function setDay(day) {
+            document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            currentDay = day;
+            renderSchedule();
+        }
+
+        function setScene(scene) {
             document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
-            renderSchedule(sceneId);
+            currentScene = scene;
+            renderSchedule();
         }
 
-        // Отрисовка расписания на экране
-        function renderSchedule(sceneId) {
+        function renderSchedule() {
             const list = document.getElementById('schedule-list');
             list.innerHTML = '';
-            events[sceneId].forEach(item => {
+            const activeEvents = festivalData[currentDay][currentScene];
+            
+            activeEvents.forEach(item => {
                 list.innerHTML += `
                     <div class="event-card">
                         <div class="event-time">${item.time}</div>
@@ -294,21 +403,41 @@
             });
         }
 
-        // Кнопка записи
-        function signUp(btn, name) {
-            btn.innerText = "Вы записаны!";
-            btn.style.background = "#505050";
-            btn.style.color = "#ffffff";
-            btn.disabled = true;
-            if (tg) {
-                tg.showAlert(`Отлично! Вы успешно записались на мастер-класс: ${name}`);
-            } else {
-                alert(`Успешная запись на: ${name}`);
-            }
+        function renderWorkshops() {
+            const list = document.getElementById('workshops-list');
+            list.innerHTML = '';
+            workshopsData.forEach((item, index) => {
+                const isFull = item.seats === 0;
+                list.innerHTML += `
+                    <div class="workshop-card">
+                        <div class="workshop-header">
+                            <span style="color: var(--accent-purple);">${item.time}</span>
+                            <span style="color: var(--text-muted);">${isFull ? 'Мест нет' : 'Осталось мест: ' + item.seats}</span>
+                        </div>
+                        <h3 style="margin:0 0 5px 0;">${item.title}</h3>
+                        <p style="margin:0; font-size:13px; color:var(--text-muted);">${item.label}</p>
+                        <button class="action-btn" 
+                                style="${isFull ? 'background:#2d3142; color:var(--text-muted);' : ''}"
+                                ${isFull ? 'disabled' : ''} 
+                                onclick="signUp(this, '${item.title}', ${index})">
+                            ${isFull ? 'Запись закрыта' : 'Записаться'}
+                        </button>
+                    </div>
+                `;
+            });
         }
 
-        // Первичный запуск расписания
-        renderSchedule('main');
+        function signUp(btn, name, index) {
+            btn.innerText = "Вы записаны!";
+            btn.style.background = "#2d3142";
+            btn.style.color = "var(--accent-green)";
+            btn.disabled = true;
+            if (tg) tg.showAlert(`Вы успешно записались на мастер-класс: ${name}`);
+        }
+
+        // Старт
+        renderSchedule();
+        renderWorkshops();
     </script>
 </body>
 </html>
