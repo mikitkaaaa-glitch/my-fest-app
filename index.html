@@ -22,7 +22,7 @@
             color: var(--text-color);
             margin: 0;
             padding: 0;
-            padding-bottom: 90px;
+            padding-bottom: 95px;
             -webkit-user-select: none;
             user-select: none;
         }
@@ -82,7 +82,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
-        /* Селектор Сцен */
+        /* Селектор Сцен и Карт */
         .scene-selector {
             display: flex;
             gap: 10px;
@@ -193,6 +193,35 @@
             cursor: pointer;
             margin-top: 12px;
             width: 100%;
+            transition: opacity 0.2s;
+        }
+
+        /* Зона загрузки медиа */
+        .upload-zone {
+            border: 2px dashed var(--border-color);
+            padding: 35px 20px;
+            border-radius: 16px;
+            background-color: var(--card-bg);
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .upload-zone:hidden { display: none; }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .preview-item {
+            width: 100%;
+            height: 90px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
         }
 
         /* Навигация */
@@ -213,13 +242,14 @@
             background: none;
             border: none;
             color: var(--text-muted);
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 6px;
+            flex: 1;
         }
 
         .nav-btn.active {
@@ -243,7 +273,7 @@
         <p>Официальный гид фестиваля</p>
     </header>
 
-    <!-- СЕЛЕКТОР ДНЕЙ (Общий для расписания) -->
+    <!-- СЕЛЕКТОР ДНЕЙ -->
     <div id="global-day-zone" class="day-selector">
         <button class="day-btn active" onclick="setDay('sat')">Суббота, 20 июня</button>
         <button class="day-btn" onclick="setDay('sun')">Воскресенье, 21 июня</button>
@@ -263,10 +293,14 @@
 
     <!-- ЭКРАН 2: КАРТА -->
     <div id="screen-map" class="screen">
+        <div class="scene-selector" style="padding: 0 15px; margin-top: 15px;">
+            <button class="scene-btn active" onclick="changeMap('map1.png')">Карта (Часть 1)</button>
+            <button class="scene-btn" onclick="changeMap('map2.png')">Карта (Часть 2)</button>
+        </div>
+
         <div class="map-wrapper">
-            <!-- Код ищет файл map.png в твоем репозитории -->
-            <img src="map.png" alt="Карта фестиваля" class="map-img" onerror="this.src='https://placehold.co/600x800/131a2c/00df89?text=Загрузите+map.png+в+GitHub'">
-            <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">Совет: карту можно сохранить как изображение на телефон</p>
+            <img id="map-viewport" src="map1.png" alt="Карта фестиваля" class="map-img" onerror="this.src='https://placehold.co/600x800/131a2c/00df89?text=Загрузите+этот+файл+в+GitHub'">
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">Совет: нужную часть карты можно сохранить как фото на телефон</p>
         </div>
     </div>
 
@@ -277,7 +311,37 @@
         </div>
     </div>
 
-    <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+    <!-- ЭКРАН 4: ПОДЕЛИТЬСЯ (НОВЫЙ) -->
+    <div id="screen-share" class="screen">
+        <div style="padding: 0 15px; margin-top: 20px;">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h2 style="margin: 0 0 8px 0; font-size: 20px; color: var(--accent-green);">Поделись моментами!</h2>
+                <p style="margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+                    Поймали крутой кадр, атмосферное видео с сета или сочный фуд-хантинг? Загружайте свои медиафайлы — лучшие попадут в официальные соцсети Vulitsa Ezha! 🙌
+                </p>
+            </div>
+
+            <!-- Интерактивная зона клика -->
+            <div class="upload-zone" onclick="document.getElementById('guest-media-input').click()">
+                <svg viewBox="0 0 24 24" style="width: 44px; height: 44px; fill: var(--accent-purple); margin-bottom: 12px;"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                <div style="font-weight: bold; font-size: 15px; margin-bottom: 4px;">Выбрать фото / видео</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Можно выбрать несколько файлов сразу</div>
+            </div>
+
+            <!-- Скрытый нативный инпут для медиа -->
+            <input type="file" id="guest-media-input" multiple accept="image/*,video/*" style="display: none;" onchange="previewFiles(this)">
+
+            <!-- Контейнер для миниатюр выбранных файлов -->
+            <div id="media-preview-container" class="preview-grid"></div>
+
+            <!-- Кнопка отправки -->
+            <button id="send-media-btn" class="action-btn" style="display: none; margin-top: 25px;" onclick="uploadGuestMedia()">
+                Отправить организаторам
+            </button>
+        </div>
+    </div>
+
+    <!-- НИЖНЯЯ НАВИГАЦИЯ (ОБНОВЛЕННАЯ С 4 КНОПКАМИ) -->
     <nav class="bottom-nav">
         <button class="nav-btn active" onclick="switchScreen('schedule', this)">
             <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
@@ -285,11 +349,15 @@
         </button>
         <button class="nav-btn" onclick="switchScreen('map', this)">
             <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5c.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
-            Карта локации
+            Карта
         </button>
         <button class="nav-btn" onclick="switchScreen('activities', this)">
             <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5.49 12L3 10.64l9-4.9 9 4.9-2.49 1.36L12 9.3 5.49 12z"/></svg>
-            Мастер-классы
+            Воркшопы
+        </button>
+        <button class="nav-btn" onclick="switchScreen('share', this)">
+            <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+            Поделиться
         </button>
     </nav>
 
@@ -302,11 +370,9 @@
             }
         }
 
-        // Текущее состояние фильтров
         let currentDay = 'sat';
         let currentScene = 'main';
 
-        // Полная база данных расписания из твоего файла
         const festivalData = {
             sat: {
                 main: [
@@ -362,12 +428,12 @@
             document.getElementById(`screen-${screenId}`).classList.add('active');
             btn.classList.add('active');
 
-            // Скрывать выбор дней на экране карты
             const dayZone = document.getElementById('global-day-zone');
-            if (screenId === 'map') {
-                dayZone.style.display = 'none';
-            } else {
+            // Теперь показываем плашку дней только на вкладках расписания и воркшопов
+            if (screenId === 'schedule' || screenId === 'activities') {
                 dayZone.style.display = 'flex';
+            } else {
+                dayZone.style.display = 'none';
             }
         }
 
@@ -383,6 +449,12 @@
             event.target.classList.add('active');
             currentScene = scene;
             renderSchedule();
+        }
+
+        function changeMap(mapFileName) {
+            document.querySelectorAll('#screen-map .scene-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('map-viewport').src = mapFileName;
         }
 
         function renderSchedule() {
@@ -435,7 +507,66 @@
             if (tg) tg.showAlert(`Вы успешно записались на мастер-класс: ${name}`);
         }
 
-        // Старт
+        // --- ЛОГИКА ЗАГРУЗКИ ФАЙЛОВ ДЛЯ ГОСТЕЙ ---
+        function previewFiles(input) {
+            const container = document.getElementById('media-preview-container');
+            const sendBtn = document.getElementById('send-media-btn');
+            container.innerHTML = ''; // очистить старые превьюшки
+
+            if (input.files && input.files.length > 0) {
+                sendBtn.style.display = 'block'; // показываем кнопку отправки
+                
+                // Рендерим миниатюру для каждого выбранного файла
+                Array.from(input.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'preview-item';
+                        container.appendChild(img);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                sendBtn.style.display = 'none';
+            }
+        }
+
+        function uploadGuestMedia() {
+            const btn = document.getElementById('send-media-btn');
+            const container = document.getElementById('media-preview-container');
+            const input = document.getElementById('guest-media-input');
+
+            btn.innerText = "Отправка файлов...";
+            btn.style.opacity = "0.6";
+            btn.disabled = true;
+
+            // Имитируем сетевую задержку загрузки в 2 секунды
+            setTimeout(() => {
+                if (tg) {
+                    tg.showAlert("Успешно отправлено! Спасибо за ваши кадры, ты лучший! 🔥");
+                } else {
+                    alert("Успешно отправлено! Спасибо за ваши кадры!");
+                }
+
+                // Сбрасываем форму в исходное состояние
+                btn.innerText = "Отправить организаторам";
+                btn.style.opacity = "1";
+                btn.style.display = "none";
+                btn.disabled = false;
+                container.innerHTML = '';
+                input.value = ''; 
+
+                /* 
+                  🔧 ДЛЯ БУДУЩЕГО: Если захочешь, чтобы файлы реально улетали на твой сервер/в бота:
+                  fetch('https://твой-бэкенд.рф/api/upload', {
+                      method: 'POST',
+                      body: new FormData() // Передаешь сюда файлы из input.files
+                  });
+                */
+            }, 2000);
+        }
+
         renderSchedule();
         renderWorkshops();
     </script>
