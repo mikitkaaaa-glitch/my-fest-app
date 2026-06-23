@@ -533,40 +533,58 @@
         }
 
         function uploadGuestMedia() {
-            const btn = document.getElementById('send-media-btn');
-            const container = document.getElementById('media-preview-container');
-            const input = document.getElementById('guest-media-input');
+    const btn = document.getElementById('send-media-btn');
+    const container = document.getElementById('media-preview-container');
+    const input = document.getElementById('guest-media-input');
 
-            btn.innerText = "Отправка файлов...";
-            btn.style.opacity = "0.6";
-            btn.disabled = true;
+    btn.innerText = "Отправка файлов...";
+    btn.style.opacity = "0.6";
+    btn.disabled = true;
 
-            // Имитируем сетевую задержку загрузки в 2 секунды
-            setTimeout(() => {
-                if (tg) {
-                    tg.showAlert("Успешно отправлено! Спасибо за ваши кадры, ты лучший! 🔥");
-                } else {
-                    alert("Успешно отправлено! Спасибо за ваши кадры!");
-                }
+    // Собираем файлы из инпута в специальный формат данных
+    const formData = new FormData();
+    Array.from(input.files).forEach(file => {
+        formData.append('media', file); // 'media' совпадает с именем в bot.js
+    });
 
-                // Сбрасываем форму в исходное состояние
-                btn.innerText = "Отправить организаторам";
-                btn.style.opacity = "1";
-                btn.style.display = "none";
-                btn.disabled = false;
-                container.innerHTML = '';
-                input.value = ''; 
+    // ⚠️ ЗАМЕНИ ССЫЛКУ НИЖЕ НА СВОЮ ССЫЛКУ С RENDER (обязательно оставь /upload в конце)
+    const RENDER_SERVER_URL = 'https://testfest2.onrender.com/upload';
 
-                /* 
-                  🔧 ДЛЯ БУДУЩЕГО: Если захочешь, чтобы файлы реально улетали на твой сервер/в бота:
-                  fetch('https://твой-бэкенд.рф/api/upload', {
-                      method: 'POST',
-                      body: new FormData() // Передаешь сюда файлы из input.files
-                  });
-                */
-            }, 2000);
+    fetch(RENDER_SERVER_URL, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Ошибка сервера');
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            if (tg) {
+                tg.showAlert("Успешно отправлено! Спасибо за ваши кадры, ты лучший! 🔥");
+            } else {
+                alert("Успешно отправлено! Спасибо за ваши кадры!");
+            }
+            
+            // Сбрасываем форму в исходное состояние
+            btn.innerText = "Отправить организаторам";
+            btn.style.opacity = "1";
+            btn.style.display = "none";
+            btn.disabled = false;
+            container.innerHTML = '';
+            input.value = ''; 
+        } else {
+            throw new Error('Ошибка отправки');
         }
-
+    })
+    .catch(err => {
+        console.error(err);
+        if (tg) tg.showAlert("Не удалось отправить файлы. Попробуйте еще раз!");
+        btn.innerText = "Ошибка. Повторить?";
+        btn.style.opacity = "1";
+        btn.disabled = false;
+    });
+}
         renderSchedule();
         renderWorkshops();
     </script>
